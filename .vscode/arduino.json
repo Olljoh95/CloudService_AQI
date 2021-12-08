@@ -1,0 +1,7 @@
+{
+    "port": "COM10",
+    "board": "arduino:samd:mkrwifi1010",
+    "sketch": "AWS_IoT_WiFi.ino",
+    "output": "../build"
+    
+}

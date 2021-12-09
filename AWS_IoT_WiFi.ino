@@ -27,7 +27,9 @@ BearSSLClient sslClient(wifiClient); // Used for SSL/TLS connection, integrates 
 MqttClient    mqttClient(sslClient);
 
 unsigned long lastMillis = 0;
-uint8_t interval = 6000;
+unsigned int waitForSensors = 2500;
+
+byte mac[6];
 
 void setup() {
   Serial.begin(115200);
@@ -82,28 +84,45 @@ void loop() {
   // poll for new MQTT messages and send keep alives
   mqttClient.poll();
 
-  // publish a message roughly every 5 seconds.
-  if (millis() - lastMillis > interval) {
-    lastMillis = millis();
-
-    publishMessage();
-  }
+  getDHT_Values();
 }
+
+
 
 void getDHT_Values() {
   float temp = dht.readTemperature();
   float rh = dht.readHumidity();
-  generateVOC_Index(rh,temp);
+
+  if (millis() - lastMillis > waitForSensors) {
+    lastMillis = millis();
+
+    generateVOC_Index(rh,temp);
+  }
 }
 
 void generateVOC_Index(float rh, float temp) {
   uint8_t VOC = mySensor.getVOCindex(rh, temp);
+  delay(1000);
+  
   generateJsonObject(rh, temp, VOC);
 }
 
 void generateJsonObject(float rh, float temp, uint8_t VOC) {
-  DynamicJsonDocument SensorData(128);
-  
+  char payload[256]; 
+  String mac = "7C:9E:BD:3A:69:7C";
+
+  StaticJsonDocument<256> doc;
+
+  doc["macId"] = mac;
+  doc["temperature"] = temp;
+  doc["humidity"] = rh;
+  doc["voc"] = VOC;
+  doc["timeStamp"] = getTime();
+
+  serializeJson(doc, payload);
+
+  publishMessage(payload);
+
 }
 
 unsigned long getTime() {
@@ -112,10 +131,6 @@ unsigned long getTime() {
 }
 
 void connectWiFi() {
-  Serial.print("Attempting to connect to SSID: ");
-  Serial.print(ssid);
-  Serial.print(" ");
-
   while (WiFi.begin(ssid, pass) != WL_CONNECTED) {
     // failed, retry
     Serial.print(".");
@@ -146,13 +161,12 @@ void connectMQTT() {
   mqttClient.subscribe("arduino/incoming");
 }
 
-void publishMessage() {
-  Serial.println("Publishing message");
+void publishMessage(char *payload) {
+  Serial.println(payload);
 
   // send message, the Print interface can be used to set the message contents
-  mqttClient.beginMessage("arduino/outgoing");
-  mqttClient.print("hello ");
-  mqttClient.print(getTime());
+  mqttClient.beginMessage("outTopic");
+  mqttClient.print(payload);
   mqttClient.endMessage();
 }
 

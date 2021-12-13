@@ -3,9 +3,10 @@
 #include <ArduinoMqttClient.h>
 #include <ArduinoJson.h>
 #include <WiFiNINA.h>
+#include <Wire.h>
+#include <ArduinoLowPower.h>
 #include "DHT.h"
 #include "SparkFun_SGP40_Arduino_Library.h"
-#include <Wire.h>
 
 #include "arduino_secrets.h"
 
@@ -27,9 +28,7 @@ BearSSLClient sslClient(wifiClient); // Used for SSL/TLS connection, integrates 
 MqttClient    mqttClient(sslClient);
 
 unsigned long lastMillis = 0;
-unsigned int waitForSensors = 2500;
-
-byte mac[6];
+unsigned int msg_interval = 15000;
 
 void setup() {
   Serial.begin(115200);
@@ -72,6 +71,11 @@ void setup() {
 }
 
 void loop() {
+  char payload[256];
+  String mac = "7C:9E:BD:3A:69:7C";
+  float temp, rh;
+  uint8_t VOC;
+
   if (WiFi.status() != WL_CONNECTED) {
     connectWiFi();
   }
@@ -84,45 +88,30 @@ void loop() {
   // poll for new MQTT messages and send keep alives
   mqttClient.poll();
 
-  getDHT_Values();
-}
+  if (millis() - lastMillis > msg_interval) {
 
+    while(true) {
+      temp = dht.readTemperature();
+      rh = dht.readHumidity();
+      VOC = mySensor.getVOCindex(rh, temp);
+      if(VOC > 90) {
+        break;
+      }
+    }
 
+    StaticJsonDocument<256> doc;
 
-void getDHT_Values() {
-  float temp = dht.readTemperature();
-  float rh = dht.readHumidity();
+    doc["macId"] = mac;
+    doc["temperature"] = temp;
+    doc["humidity"] = rh;
+    doc["voc"] = VOC;
+    doc["timeStamp"] = getTime();
 
-  if (millis() - lastMillis > waitForSensors) {
+    serializeJson(doc, payload);
+    publishMessage(payload);
+
     lastMillis = millis();
-
-    generateVOC_Index(rh,temp);
   }
-}
-
-void generateVOC_Index(float rh, float temp) {
-  uint8_t VOC = mySensor.getVOCindex(rh, temp);
-  delay(1000);
-  
-  generateJsonObject(rh, temp, VOC);
-}
-
-void generateJsonObject(float rh, float temp, uint8_t VOC) {
-  char payload[256]; 
-  String mac = "7C:9E:BD:3A:69:7C";
-
-  StaticJsonDocument<256> doc;
-
-  doc["macId"] = mac;
-  doc["temperature"] = temp;
-  doc["humidity"] = rh;
-  doc["voc"] = VOC;
-  doc["timeStamp"] = getTime();
-
-  serializeJson(doc, payload);
-
-  publishMessage(payload);
-
 }
 
 unsigned long getTime() {

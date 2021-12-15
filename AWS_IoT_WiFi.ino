@@ -28,7 +28,8 @@ BearSSLClient sslClient(wifiClient); // Used for SSL/TLS connection, integrates 
 MqttClient    mqttClient(sslClient);
 
 unsigned long lastMillis = 0;
-unsigned int msg_interval = 15000;
+unsigned int msg_interval = 20000;
+bool sensorCalibrated = false;
 
 void setup() {
   Serial.begin(115200);
@@ -94,9 +95,15 @@ void loop() {
       temp = dht.readTemperature();
       rh = dht.readHumidity();
       VOC = mySensor.getVOCindex(rh, temp);
-      if(VOC > 90) {
+      if(sensorCalibrated == false) {
+        if(VOC > 90) {
+          sensorCalibrated = true;
+          break;
+        }
+      }else {
         break;
       }
+
     }
 
     StaticJsonDocument<256> doc;

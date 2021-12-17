@@ -60,3 +60,6 @@
         </blockquote>
     </details>
 </details>
+
+## Visualisering av data
+[Quicksight](https://eu-west-1.quicksight.aws.amazon.com/sn/start/analyses)

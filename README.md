@@ -62,7 +62,6 @@
 </details>
 
 ## Kod-länkar
-
 >[Arduino-kod](AWS_IoT_WiFi.ino)
 
 >[Lambda function-kod](ArduinoConsumeMessages/index.js)

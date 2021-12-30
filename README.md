@@ -25,7 +25,7 @@
 </div>
 
 ## Systemskiss
-[![Systemskiss](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/e724e95e-a84b-4c3f-a943-4309c46b6724/Untitled_Diagram.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20211230%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20211230T124210Z&X-Amz-Expires=86400&X-Amz-Signature=aab0db48f43d34566883ea1834ec81cbe3f2d96826939ecd7306812f18a51a5b&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22Untitled%2520Diagram.jpg%22&x-id=GetObject)
+![Systemskiss](https://s3.us-west-2.amazonaws.com/secure.notion-static.com/e724e95e-a84b-4c3f-a943-4309c46b6724/Untitled_Diagram.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAT73L2G45EIPT3X45%2F20211230%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20211230T124210Z&X-Amz-Expires=86400&X-Amz-Signature=aab0db48f43d34566883ea1834ec81cbe3f2d96826939ecd7306812f18a51a5b&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22Untitled%2520Diagram.jpg%22&x-id=GetObject)
 
 ## Använda program/libraries/hårdvara
 
